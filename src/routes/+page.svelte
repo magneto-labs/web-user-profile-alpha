@@ -5,6 +5,7 @@
 	let userAgent;
     let osPlatform;
 	let location;
+    let graphic;
 
     const retrieveUserAgent = () => {
         return window.navigator.userAgent ?? window.navigator.vendor ?? window.opera;
@@ -26,6 +27,14 @@
             ret = 'Else';
         }
         return ret;
+    }
+
+    const retrieveGraphicInfo = () => {
+        var canvas = document.createElement('canvas');
+        var gl = canvas.getContext('webgl');
+        var debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+        var renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        return renderer;
     }
 
 	const getLocation = () => {
@@ -55,6 +64,7 @@
 	if (browser) {
 		userAgent = retrieveUserAgent();
         osPlatform = findOSPlatform(userAgent);
+        graphic = retrieveGraphicInfo();
 		location = getLocation();
 	}
 </script>
@@ -92,7 +102,11 @@
 			<tr class="row">
 				<td>OS/Platform</td>
 				<td>{osPlatform}</td>
-			</tr>            
+			</tr>
+            <tr class="row">
+                <td>Graphic</td>
+                <td>{graphic}</td>
+            </tr>
 			<tr class="row">
 				<td>Location</td>
 				<td>{JSON.stringify(location)}</td>
