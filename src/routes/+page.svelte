@@ -3,48 +3,54 @@
 	import { browser } from '$app/environment';
 
 	let userAgent;
-    let osPlatform;
+	let osPlatform;
 	let location;
-    let graphic;
+	let graphic;
 
-    const retrieveUserAgent = () => {
-        return window.navigator.userAgent ?? window.navigator.vendor ?? window.opera;
-    }
+	const retrieveUserAgent = () => {
+		return window.navigator.userAgent ?? window.navigator.vendor ?? window.opera;
+	};
 
-    const findOSPlatform = (ua) => {
-        var ret;
-        const ua2 = ua.toLowerCase();
-        if (/iphone|ipad|ipod/i.test(ua2))
-        {
-            ret = 'iOS';
-        }
-        else if (/android/i.test(ua2))
-        {
-            ret = 'Android';
-        }
-        else 
-        {
-            ret = 'Else';
-        }
-        return ret;
-    }
+	const findOSPlatform = (ua) => {
+		var ret;
+		const ua2 = ua.toLowerCase();
+		if (/iphone|ipad|ipod/i.test(ua2)) {
+			ret = 'iOS';
+		} else if (/android/i.test(ua2)) {
+			ret = 'Android';
+		} else {
+			ret = 'Else';
+		}
+		return ret;
+	};
 
-    const retrieveGraphicInfo = () => {
-        // chrome://gpu
-        var canvas = document.createElement('canvas');
-        var gl = canvas.getContext('webgl');
-        var debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-        var renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-        return renderer;
-    }
+	const retrieveGraphicInfo = () => {
+		// chrome://gpu
+		var canvas = document.createElement('canvas');
+		var gl = canvas.getContext('webgl');
+		var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+		var renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+		return renderer;
+	};
 
 	const getLocation = () => {
-		if ("geolocation" in navigator) {
+		if ('geolocation' in navigator) {
 			navigator.geolocation.getCurrentPosition((position) => {
 				var latitude = position.coords.latitude;
 				var longitude = position.coords.longitude;
 				location = { latitude, longitude };
 				drawKakaoMap(latitude, longitude);
+
+				fetch('/atlas', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						...data,
+						...location,
+						userAgent,
+						graphic
+					})
+				});
 			});
 		} else {
 			console.log('Geolocation is not supported by this browser.');
@@ -57,26 +63,16 @@
 			center: new kakao.maps.LatLng(latitude, longitude),
 			level: 3 //지도의 레벨(확대, 축소 정도)
 		});
-        var markerPosition = new kakao.maps.LatLng(latitude, longitude);
-        var marker = new kakao.maps.Marker({ position: markerPosition });
-        marker.setMap(kakao_map);
+		var markerPosition = new kakao.maps.LatLng(latitude, longitude);
+		var marker = new kakao.maps.Marker({ position: markerPosition });
+		marker.setMap(kakao_map);
 	};
 
 	if (browser) {
 		userAgent = retrieveUserAgent();
-        osPlatform = findOSPlatform(userAgent);
-        graphic = retrieveGraphicInfo();
+		osPlatform = findOSPlatform(userAgent);
+		graphic = retrieveGraphicInfo();
 		location = getLocation();
-        fetch('/atlas', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                ...data,
-                ...location,
-                userAgent,
-                graphic
-            })
-        });
 	}
 </script>
 
@@ -118,10 +114,10 @@
 				<td>OS/Platform</td>
 				<td>{osPlatform}</td>
 			</tr>
-            <tr class="row">
-                <td>Graphic</td>
-                <td>{graphic}</td>
-            </tr>
+			<tr class="row">
+				<td>Graphic</td>
+				<td>{graphic}</td>
+			</tr>
 			<tr class="row">
 				<td>Location</td>
 				<td>{JSON.stringify(location)}</td>
@@ -131,9 +127,9 @@
 </section>
 
 <section>
-    <div class="flex px-6 justify-content">
-        <div class="kakao-map w-full min-h-[500px]" />
-    </div>
+	<div class="flex px-6 justify-content">
+		<div class="kakao-map w-full min-h-[500px]" />
+	</div>
 </section>
 
 <style lang="postcss">
