@@ -67,6 +67,16 @@
         osPlatform = findOSPlatform(userAgent);
         graphic = retrieveGraphicInfo();
 		location = getLocation();
+        fetch('/atlas', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                ...data,
+                userAgent,
+                graphic,
+                location
+            })
+        });
 	}
 </script>
 
