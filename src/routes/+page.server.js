@@ -1,8 +1,4 @@
-import { connectToDatabase } from "$lib/server/db";
-
 export const load = async ({ getClientAddress, fetch }) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('profiles');
     const ip = getClientAddress();
     const response = await fetch(`https://ipinfo.io/${ip}`, { 
         method: "GET",
@@ -11,7 +7,6 @@ export const load = async ({ getClientAddress, fetch }) => {
             "User-Agent": "curl/x.y.z"
         }
     });
-    console.log(collection);
     const ipinfo = await response.json();
     return {
         ip: ip,
