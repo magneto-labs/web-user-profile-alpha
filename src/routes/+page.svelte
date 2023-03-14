@@ -30,6 +30,7 @@
     }
 
     const retrieveGraphicInfo = () => {
+        // chrome://gpu
         var canvas = document.createElement('canvas');
         var gl = canvas.getContext('webgl');
         var debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
@@ -94,6 +95,10 @@
 			<tr class="row">
 				<td>IP</td>
 				<td>{data.ip}</td>
+			</tr>
+			<tr class="row">
+				<td>IP Provider</td>
+				<td>{`${data.org} (${data.postal})`}</td>
 			</tr>
 			<tr class="row">
 				<td>User Agent</td>
