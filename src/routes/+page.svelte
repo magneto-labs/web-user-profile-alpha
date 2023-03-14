@@ -3,9 +3,33 @@
 	import { browser } from '$app/environment';
 
 	let userAgent;
+    let osPlatform;
 	let location;
+
+    const retrieveUserAgent = () => {
+        return window.navigator.userAgent ?? window.navigator.vendor ?? window.opera;
+    }
+
+    const findOSPlatform = (ua) => {
+        var ret;
+        const ua2 = ua.toLowerCase();
+        if (/iphone|ipad|ipod/i.test(ua2))
+        {
+            ret = 'iOS';
+        }
+        else if (/android/i.test(ua2))
+        {
+            ret = 'Android';
+        }
+        else 
+        {
+            ret = 'Else';
+        }
+        return ret;
+    }
+
 	const getLocation = () => {
-		if (navigator.geolocation) {
+		if ("geolocation" in navigator) {
 			navigator.geolocation.getCurrentPosition((position) => {
 				var latitude = position.coords.latitude;
 				var longitude = position.coords.longitude;
@@ -29,7 +53,8 @@
 	};
 
 	if (browser) {
-		userAgent = navigator.userAgent;
+		userAgent = retrieveUserAgent();
+        osPlatform = findOSPlatform(userAgent);
 		location = getLocation();
 	}
 </script>
@@ -56,15 +81,19 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr class="border-b border-slate-100 p-4">
+			<tr class="row">
 				<td>IP</td>
 				<td>{data.ip}</td>
 			</tr>
-			<tr class="border-b border-slate-100 p-4">
+			<tr class="row">
 				<td>User Agent</td>
 				<td>{userAgent}</td>
 			</tr>
-			<tr>
+			<tr class="row">
+				<td>OS/Platform</td>
+				<td>{osPlatform}</td>
+			</tr>            
+			<tr class="row">
 				<td>Location</td>
 				<td>{JSON.stringify(location)}</td>
 			</tr>
@@ -73,7 +102,9 @@
 </section>
 
 <section>
-	<div class="kakao-map w-5/6 min-h-[500px]" />
+    <div class="flex px-6 justify-content">
+        <div class="kakao-map w-full min-h-[500px]" />
+    </div>
 </section>
 
 <style lang="postcss">
